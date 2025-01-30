@@ -20,6 +20,8 @@ import javax.swing.JLabel;
 import javax.swing.JTextField;
 import javax.swing.JTextArea;
 import javax.swing.border.EtchedBorder;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class CD extends JFrame {
 
@@ -42,6 +44,7 @@ public class CD extends JFrame {
 			public void run() {
 				try {
 					CD frame = new CD();
+					frame.cargarListaCDs();
 					frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -54,13 +57,19 @@ public class CD extends JFrame {
 	 * Create the frame.
 	 */
 	public CD() {
+		addWindowListener(new WindowAdapter() {
+			@Override
+			public void windowClosing(WindowEvent e) {
+				salirForm();
+			}
+		});
 		
 		CDs = new ArrayList<>();
 		
 		setSize(new Dimension(450,300));
 		setResizable(false);
-		setTitle("CDs Prestados");
-		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		setTitle("CDs - Control de préstamos");
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		setBounds(100, 100, 450, 300);
 		
 		JMenuBar menuBar = new JMenuBar();
@@ -88,12 +97,18 @@ public class CD extends JFrame {
 				autor = txtAutor.getText();
 				genero = txtGenero.getText();
 				descripcion = txtPrestamo.getText();
+				
 				CDs.add(new CDBean(titulo,autor,genero,descripcion));
 				
+				if (dlgBuscar != null && dlgBuscar.isVisible())
+					dlgBuscar.actualizarLista();
+				
 				JOptionPane.showMessageDialog(null, "Se ha añadido el CD a la colección");
+				
 				Collections.sort(CDs);
 			}
 		});
+		
 		mnMenuArchivo.add(mntmAnadirRegistro);
 		
 		JMenuItem mntmBuscarRegistro = new JMenuItem("Buscar Registro");
@@ -102,6 +117,7 @@ public class CD extends JFrame {
 				mostrarBusqueda();
 			}
 		});
+		
 		mnMenuArchivo.add(mntmBuscarRegistro);
 		
 		JSeparator separator = new JSeparator();
@@ -110,16 +126,10 @@ public class CD extends JFrame {
 		JMenuItem mntmSalir = new JMenuItem("Salir");
 		mntmSalir.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				int respuesta = JOptionPane.showConfirmDialog(null,
-						"Esta acción cerrará la aplicación, ¿desea continuar?",
-						"Atención",
-						JOptionPane.YES_NO_OPTION);
-				if (respuesta != JOptionPane.YES_OPTION) {
-					return;
-				}
-				System.exit(0);
+				salirForm();
 			}
 		});
+		
 		mnMenuArchivo.add(mntmSalir);
 		contentPane = new JPanel();
 		contentPane.setBorder(new EmptyBorder(5, 5, 5, 5));
@@ -172,7 +182,7 @@ public class CD extends JFrame {
 	protected void mostrarBusqueda() {
 		dlgBuscar = new BuscarReg(this);
 		dlgBuscar.setVisible(true);
-		}
+	}
 	
 	public List<CDBean> getCDs() {
 		return CDs;
@@ -184,5 +194,41 @@ public class CD extends JFrame {
 		txtAutor.setText(cd.getAutor());
 		txtGenero.setText(cd.getGenero());
 		txtPrestamo.setText(cd.getPrestamo());
+	}
+	
+	private void salirForm() {
+		int respuesta = JOptionPane.showConfirmDialog(null,
+		"Esta acción cerrará la aplicación, ¿desea continuar?",
+		"Atención",
+		JOptionPane.YES_NO_OPTION);
+		
+		if (respuesta != JOptionPane.YES_OPTION) {
+			return;
 		}
+		
+		System.exit(0);
+	}
+	
+	private void cargarListaCDs() {
+		CDs.add(new CDBean("Plays Monk", "Jamie Saft Trio", "Jazz", null));
+		CDs.add(new CDBean("The Bricktionary", "Boldy James & Harry Fraud",
+	"Hip-Hop", "Prestado a Rosa el 11/09/2024"));
+		CDs.add(new CDBean("Ballads of Harry Houdini", "Papa M", "Indie",
+	"Prestado a Marc el 15/09/2024"));
+		CDs.add(new CDBean("Dead Slow", "Heavy Moss", "Rock", null));
+		CDs.add(new CDBean("¿Y Qué Si Todo Acaba Mal?", "Kendall Peña", "Pop",
+	"Prestado a Tomás el 22/10/2024"));
+		CDs.add(new CDBean("Merciless", "Body Count", "Indie", "Prestado a Julián el 01/11/2024"));
+		CDs.add(new CDBean("Happy New Year EP", "The Staves", "Country",
+	null));
+		CDs.add(new CDBean("Real Striker Music", "Babyfxce E", "Hip-Hop",
+	"Prestado a Esther el 17/11/2024"));
+		CDs.add(new CDBean("Peace of Action", "Damu The Fudgemunk", "Jazz",
+	null));
+		CDs.add(new CDBean("Phantom Brickworks", "Bibio", "Electronic", "Prestado a Josep el 01/12/2024"));
+		CDs.add(new CDBean("10 Years of Rhythm Section International", "Various Artists", "Electronic", null));
+		CDs.add(new CDBean("Wicked OST", "Various Artists", "Pop", null));
+		CDs.add(new CDBean("Live From Brooklyn Paramount", "Black Pumas",
+	"Rock", "Prestado a Sandra el 02/11/2024"));
+	}
 }
